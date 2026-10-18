@@ -6,12 +6,13 @@ public class RifleSoldier : MonoBehaviour
 {
     [SerializeField] GameObject BulletPrefab;
     [SerializeField] Transform ShootingOrigin, Wedge;
+    [SerializeField] LayerMask RayMask;
     [SerializeField] int BurstCount = 3;
-    [SerializeField]
-    float AngleError = 2f, BurstCooldown = 2f, BetweenShotDelay = 0.2f,
+    [SerializeField] float AngleError = 2f, BurstCooldown = 2f, BetweenShotDelay = 0.2f,
         DelayRandomMax = 0.5f, SightCone = 40, SightRange = 25f, 
         ReactionTime = 0.2f, RotationSpeed = 200;
     [SerializeField] Material WedgeMaterial;
+    
 
     Transform Player;
     float ShootingTimer = 0, ReactionTimer = 0;
@@ -42,17 +43,28 @@ public class RifleSoldier : MonoBehaviour
         Wedge.gameObject.SetActive(true);
         Wedge.transform.localScale = new Vector3(SightRange*2, SightRange*2, 1);
 
-        WedgeMaterial.SetFloat("_Angle", (SightCone)*Mathf.Deg2Rad);
+        WedgeMaterial.SetFloat("_Angle", SightCone*Mathf.Deg2Rad);
     }
     private void Update()
     {
-        Vector2 dir = (Player.position - ShootingOrigin.position).normalized;
+        Vector2 dir = Player.position - ShootingOrigin.position;
+        float dist = dir.magnitude;
+        dir.Normalize();
         float relativeAngle = Vector2.SignedAngle(transform.up, dir);
 
+        RaycastHit2D hit = Physics2D.Raycast(ShootingOrigin.position, dir, dist, RayMask);
+        if(hit.point != Vector2.zero)
+        {
+            Debug.DrawLine(ShootingOrigin.position, hit.point);
+        }
+        
+
+        bool hitPlayer = hit.collider != null && hit.collider.CompareTag("Player");
         bool inSightCone = Mathf.Abs(relativeAngle) < SightCone / 2f;
         bool inRange = Vector2.Distance(ShootingOrigin.position, Player.position) < SightRange;
+        
         //inside cone, can raycast, in range, inside shooting cone
-        if (inSightCone && inRange)
+        if (inSightCone && inRange && hitPlayer)
         {
             Debug.Log($"INSIDE LINE OF SIGHT OF {transform.name}");
             ReactionTimer += Time.deltaTime;

@@ -12,6 +12,7 @@ public class DroneGun : MonoBehaviour
 
     //gun
     [SerializeField] GameObject ImpactPrefab;
+    [SerializeField] LayerMask RayMask;
     [SerializeField] float Damage = 4f, ShotCooldown = 0.05f, ImpactRadius = 0.1f, MaxSpread = 25 /*degrees*/, SpreadIncreaseSpeed = 2f, SpreadDecreaseSpeed = 8f; 
     float Timer = 0, Spread = 0;
 
@@ -74,23 +75,37 @@ public class DroneGun : MonoBehaviour
                 }
                 //shoot
                 Collider2D[] collisions = Physics2D.OverlapCircleAll(impactPos, ImpactRadius);
-                foreach(Collider2D collider in collisions)
+                //draw ray from transform to impactPos
+                Vector2 dirToImpact = impactPos - (Vector2)transform.position;
+                RaycastHit2D hit = Physics2D.Raycast(transform.position, dirToImpact, radius, RayMask);
+                //Debug.DrawLine(transform.position, radius * dirToImpact, Color.red, 20f);
+                if(hit.collider == null || hit.transform.CompareTag("Enemy"))
                 {
-                    //Debug.Log(collider.gameObject.name);
-                    if(collider.transform.TryGetComponent(out HealthHandler damageHandler))
+
+                    foreach (Collider2D collider in collisions)
                     {
-                        damageHandler.TakeDamage(Damage);
-                        //blood
-                        Vector2 dirToEnemy = (collider.transform.position - transform.position).normalized;
-                        float angle = Mathf.Atan2(dirToEnemy.y, dirToEnemy.x)*Mathf.Rad2Deg;
-                        GameObject blood = Instantiate(BloodPrefab1, (Vector2)collider.transform.position + dirToEnemy, Quaternion.Euler(0,0,angle-90));
-                        blood.GetComponent<BloodSplatter>().Direction = dirToEnemy;
+                        //Debug.Log(collider.gameObject.name);
+                        if (collider.transform.TryGetComponent(out HealthHandler damageHandler))
+                        {
+                            damageHandler.TakeDamage(Damage);
+                            //blood
+                            Vector2 dirToEnemy = (collider.transform.position - transform.position).normalized;
+                            float angle = Mathf.Atan2(dirToEnemy.y, dirToEnemy.x) * Mathf.Rad2Deg;
+                            GameObject blood = Instantiate(BloodPrefab1, (Vector2)collider.transform.position + dirToEnemy, Quaternion.Euler(0, 0, angle - 90));
+                            blood.GetComponent<BloodSplatter>().Direction = dirToEnemy;
+                        }
                     }
+                    Instantiate(ImpactPrefab, impactPos, Quaternion.Euler(0, 0, targetAngle - 180f));
                 }
-                Instantiate(ImpactPrefab, impactPos, Quaternion.Euler(0,0,targetAngle - 180f));
+                else
+                {
+                    Debug.Log("Hit found collider");
+                    //since decals zero point is at 90 degrees
+                    float normalAngle = Vector2.Angle(Vector2.up, hit.normal); //change to right / left if the decal changes to sideways direction
+                    Instantiate(ImpactPrefab, hit.point, Quaternion.Euler(0, 0, normalAngle));
+                }
 
                 
-
             }
             
             //hit ground (mousepos) and overlapcircle to get enemies hit
