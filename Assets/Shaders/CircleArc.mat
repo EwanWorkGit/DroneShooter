@@ -34,7 +34,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Angle: 1.1211995
+    - _Angle: 1.1641345
     - _ArcOpacity: 0.3
     - _EndAngle: 2.57
     - _Radius: -0.18

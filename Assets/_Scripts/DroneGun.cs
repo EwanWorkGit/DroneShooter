@@ -61,6 +61,8 @@ public class DroneGun : MonoBehaviour
         if(Input.GetMouseButton(0))
         {
             Timer -= Time.deltaTime;
+
+            //change spread to be inside a uniform circle with a radius proportional to 1/time elapsed
             Spread += SpreadIncreaseSpeed * Time.deltaTime;
             Spread = Mathf.Min(Spread, MaxSpread);
             float angleWithSpread = targetAngle + Random.Range(-Spread/2f, Spread/2f); //it can impact within target angle -+ spead
@@ -91,8 +93,6 @@ public class DroneGun : MonoBehaviour
                             //blood
                             Vector2 dirToEnemy = (collider.transform.position - transform.position).normalized;
                             float angle = Mathf.Atan2(dirToEnemy.y, dirToEnemy.x) * Mathf.Rad2Deg;
-                            GameObject blood = Instantiate(BloodPrefab1, (Vector2)collider.transform.position + dirToEnemy, Quaternion.Euler(0, 0, angle - 90));
-                            blood.GetComponent<BloodSplatter>().Direction = dirToEnemy;
                         }
                     }
                     Instantiate(ImpactPrefab, impactPos, Quaternion.Euler(0, 0, targetAngle - 180f));

@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class HealthHandler : MonoBehaviour
 {
+    public static event Action<Transform> WasDamaged;
+
     [SerializeField] float Health = 10f;
 
     public void TakeDamage(float damage)
@@ -14,5 +17,6 @@ public class HealthHandler : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        WasDamaged?.Invoke(transform);
     }
 }

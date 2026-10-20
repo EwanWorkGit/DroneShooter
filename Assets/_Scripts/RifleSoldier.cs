@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class RifleSoldier : MonoBehaviour
@@ -10,10 +12,13 @@ public class RifleSoldier : MonoBehaviour
     [SerializeField] int BurstCount = 3;
     [SerializeField] float AngleError = 2f, BurstCooldown = 2f, BetweenShotDelay = 0.2f,
         DelayRandomMax = 0.5f, SightCone = 40, SightRange = 25f, 
-        ReactionTime = 0.2f, RotationSpeed = 200;
+        ReactionTime = 0.2f, RotationSpeed = 200, AlertRadius = 15f;
     [SerializeField] Material WedgeMaterial;
+    [SerializeField] SpriteRenderer WedgeRend;
+    [SerializeField] bool WedgeEnabled = true, AlertRadiusEnabled = false;
+    MaterialPropertyBlock PropertyBlock;
     
-
+    //List<Transform> Enemies = new List<Transform>();
     Transform Player;
     float ShootingTimer = 0, ReactionTimer = 0;
     float CurrentCooldown;
@@ -21,29 +26,28 @@ public class RifleSoldier : MonoBehaviour
     bool NotFiring = true;
     bool Detected = false;
 
+    private void OnDrawGizmos()
+    {
+        if(AlertRadiusEnabled)
+        {
+            Gizmos.DrawWireSphere(transform.position, AlertRadius);
+        }
+    }
+
     private void OnValidate()
     {
-        if(WedgeMaterial != null)
-        {
-            WedgeMaterial.SetFloat("_Angle", SightCone * Mathf.Deg2Rad);
-            if(Wedge != null)
-            {
-                Wedge.localScale = new Vector3(SightRange * 2, SightRange * 2, 1);
-            }
-        }
-        
+        UpdateWedge();
     }
 
     private void Awake()
     {
+        //Transform[] enemiesFound = FindObjectsOfType<Transform>();
+        //Enemies = enemiesFound.ToList();
+        HealthHandler.WasDamaged += TryAlert;
         Player = GameObject.FindGameObjectWithTag("Player").transform;
-        CurrentCooldown = BurstCooldown + Random.Range(-DelayRandomMax,DelayRandomMax);
+        CurrentCooldown = BurstCooldown + UnityEngine.Random.Range(-DelayRandomMax,DelayRandomMax);
         //starts a little above / under what to reach to randomize firing time at start
         ShootingTimer = BurstCooldown;
-        Wedge.gameObject.SetActive(true);
-        Wedge.transform.localScale = new Vector3(SightRange*2, SightRange*2, 1);
-
-        WedgeMaterial.SetFloat("_Angle", SightCone*Mathf.Deg2Rad);
     }
     private void Update()
     {
@@ -57,7 +61,8 @@ public class RifleSoldier : MonoBehaviour
         {
             Debug.DrawLine(ShootingOrigin.position, hit.point);
         }
-        
+
+        UpdateWedge();
 
         bool hitPlayer = hit.collider != null && hit.collider.CompareTag("Player");
         bool inSightCone = Mathf.Abs(relativeAngle) < SightCone / 2f;
@@ -66,7 +71,7 @@ public class RifleSoldier : MonoBehaviour
         //inside cone, can raycast, in range, inside shooting cone
         if (inSightCone && inRange && hitPlayer)
         {
-            Debug.Log($"INSIDE LINE OF SIGHT OF {transform.name}");
+            //Debug.Log($"INSIDE LINE OF SIGHT OF {transform.name}");
             ReactionTimer += Time.deltaTime;
             if(ReactionTimer > ReactionTime)
             {
@@ -78,7 +83,7 @@ public class RifleSoldier : MonoBehaviour
             ReactionTimer = 0;
         }
 
-        if(Detected)
+        if(Detected && hitPlayer)
         {
             float targetRotationAngle = AbsoluteAngleToPlayer();
             transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0, 0, targetRotationAngle), RotationSpeed * Time.deltaTime);
@@ -91,12 +96,18 @@ public class RifleSoldier : MonoBehaviour
         }
         
     }
+
+    private void OnDisable()
+    {
+        HealthHandler.WasDamaged -= TryAlert;
+    }
+
     IEnumerator FireBurst()
     {
         NotFiring = false;
         for(int i = 0; i < BurstCount; i++)
         {
-            float angleError = Random.Range(-AngleError, AngleError);
+            float angleError = UnityEngine.Random.Range(-AngleError, AngleError);
             Instantiate(BulletPrefab, ShootingOrigin.position, Quaternion.Euler(0, 0, transform.eulerAngles.z + angleError - 90));
             if(i < BurstCount-1)
             {
@@ -105,7 +116,7 @@ public class RifleSoldier : MonoBehaviour
         }
         NotFiring = true;
         ShootingTimer = 0;
-        CurrentCooldown = BurstCooldown + Random.Range(-DelayRandomMax, DelayRandomMax);
+        CurrentCooldown = BurstCooldown + UnityEngine.Random.Range(-DelayRandomMax, DelayRandomMax);
     }
 
     float AbsoluteAngleToPlayer()
@@ -113,5 +124,33 @@ public class RifleSoldier : MonoBehaviour
         Vector2 dir = (Player.position - transform.position).normalized;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
         return angle;
+    }
+    void UpdateWedge()
+    {
+        Wedge.gameObject.SetActive(WedgeEnabled);
+
+        if (PropertyBlock == null)
+        {
+            PropertyBlock = new();
+        }
+
+        if (WedgeMaterial != null)
+        {
+            WedgeRend.GetPropertyBlock(PropertyBlock);
+            PropertyBlock.SetFloat("_Angle", SightCone * Mathf.Deg2Rad);
+            WedgeRend.SetPropertyBlock(PropertyBlock);
+            if (Wedge != null)
+            {
+                Wedge.localScale = new Vector3(SightRange * 2, SightRange * 2, 1);
+            }
+        }
+    }
+    void TryAlert(Transform alertedTransform)
+    {
+        float dist = Vector2.Distance(alertedTransform.position, transform.position);
+        if(dist <= AlertRadius)
+        {
+            Detected = true;
+        }
     }
 }

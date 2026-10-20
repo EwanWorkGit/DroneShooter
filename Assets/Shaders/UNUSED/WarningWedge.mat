@@ -34,14 +34,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Angle: 1.48
+    - _Angle: 0.42
     - _Float: -0.37
-    - _LineFrequency: 3.49
-    - _LineWidth: 0.18
+    - _LineFrequency: 0.82
+    - _LineWidth: 0.17
     - _Movespeed: 2.72
-    - _Opacity: 0.19
+    - _Opacity: 0.48
     - _Radius: 0
     m_Colors:
-    - _BackgroundColor: {r: 1, g: 0, b: 0, a: 0}
-    - _LineColor: {r: 1, g: 0.0141509175, b: 0.0141509175, a: 0}
+    - _BackgroundColor: {r: 0, g: 0, b: 0, a: 0}
+    - _LineColor: {r: 0.5566038, g: 0.059861127, b: 0.059861127, a: 0}
   m_BuildTextureStacks: []
