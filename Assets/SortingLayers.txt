@@ -1,0 +1,5 @@
+Sorting layers: 
+-10: Floors
+3: Enemies
+4, 5 & 6: Player
+10 & 11: Crosshairs and or UI

@@ -9,7 +9,7 @@ public class HealthHandler : MonoBehaviour
 
     [SerializeField] float Health = 10f;
 
-    public void TakeDamage(float damage)
+    public void TakeDamageGeneral(float damage)
     {
         Health -= damage;
         //Debug.Log(Health);
@@ -18,5 +18,15 @@ public class HealthHandler : MonoBehaviour
             Destroy(gameObject);
         }
         WasDamaged?.Invoke(transform);
+    }
+
+    public void TakeDamagePlayer(float damage)
+    {
+        Health -= damage;
+        //Debug.Log(Health);
+        if (Health <= 0)
+        {
+            gameObject.SetActive(false);
+        }
     }
 }

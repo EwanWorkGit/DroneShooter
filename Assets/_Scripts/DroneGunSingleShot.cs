@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class DroneGunSingleShot : MonoBehaviour
 {
+    public static DroneGunSingleShot Instance;
+
     [SerializeField] Transform Drone, Crosshair, MouseHair;
 
     //rotation and opacity
@@ -14,6 +16,7 @@ public class DroneGunSingleShot : MonoBehaviour
     [SerializeField] GameObject ImpactPrefab;
     [SerializeField] LayerMask RayMask;
     [SerializeField] float MaxDamage = 4f, MinDamage = 2, ImpactRadius = 0.1f, MaxTimeElapsed = 0.785f, MinTimeElapsedToFire = 0.2f, MaxCrosshairScale = 1.0f, MinCrosshairScale = 0.5f;
+    public bool IsAiming = false;
     float TimeElapsed = 0;
     float CurrentDamage = 0;
     //animation
@@ -22,6 +25,10 @@ public class DroneGunSingleShot : MonoBehaviour
     //blood
     [SerializeField] GameObject BloodPrefab1;
 
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -61,6 +68,7 @@ public class DroneGunSingleShot : MonoBehaviour
         //shooting
         if (Input.GetMouseButton(0))
         {
+            IsAiming = true;
             TimeElapsed += Time.deltaTime;
             float timeFrac = TimeElapsed / MaxTimeElapsed;
             float inverseTimeFrac = Mathf.Max(1 - timeFrac, 0f);
@@ -87,6 +95,7 @@ public class DroneGunSingleShot : MonoBehaviour
             float distToTarget = Vector2.Distance(mousePos, transform.position);
             Shoot(crosshairPos, distToTarget, targetAngle, CurrentDamage);
             CurrentDamage = 0;
+            IsAiming = false;
         }
     }
 
@@ -101,13 +110,12 @@ public class DroneGunSingleShot : MonoBehaviour
         //Debug.DrawLine(transform.position, radius * dirToImpact, Color.red, 20f);
         if (hit.collider == null || hit.transform.CompareTag("Enemy"))
         {
-
             foreach (Collider2D collider in collisions)
             {
                 //Debug.Log(collider.gameObject.name);
                 if (collider.transform.TryGetComponent(out HealthHandler damageHandler))
                 {
-                    damageHandler.TakeDamage(damage);
+                    damageHandler.TakeDamageGeneral(damage);
                 }
             }
             Instantiate(ImpactPrefab, impactPos, Quaternion.Euler(0, 0, targetAngle - 180f));

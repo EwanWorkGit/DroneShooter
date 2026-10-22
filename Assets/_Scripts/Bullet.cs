@@ -4,11 +4,25 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+    //add action event HasImpacted
+    //if action is triggered every subrscriber should check distance to the bullet and if theyre inside alert radius the enemy should detect the player
+
     [SerializeField] float Speed = 15f, Damage = 1;
+
+    Vector2 InitialPosition;
+
+    private void Awake()
+    {
+        InitialPosition = transform.position;
+    }
 
     private void Update()
     {
         transform.position += -transform.right * Speed * Time.deltaTime;
+        if(Vector2.Distance(InitialPosition, transform.position) >= 100f)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -18,7 +32,7 @@ public class Bullet : MonoBehaviour
         {
             if (collision.transform.TryGetComponent(out HealthHandler healthHandler))
             {
-                healthHandler.TakeDamage(Damage);
+                healthHandler.TakeDamagePlayer(Damage);
             }
             else
             {

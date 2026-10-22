@@ -89,7 +89,7 @@ public class DroneGun : MonoBehaviour
                         //Debug.Log(collider.gameObject.name);
                         if (collider.transform.TryGetComponent(out HealthHandler damageHandler))
                         {
-                            damageHandler.TakeDamage(Damage);
+                            damageHandler.TakeDamageGeneral(Damage);
                             //blood
                             Vector2 dirToEnemy = (collider.transform.position - transform.position).normalized;
                             float angle = Mathf.Atan2(dirToEnemy.y, dirToEnemy.x) * Mathf.Rad2Deg;

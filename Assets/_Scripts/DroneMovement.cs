@@ -7,7 +7,7 @@ public class DroneMovement : MonoBehaviour
 {
     [NonSerialized] public float Altitude = 0;
 
-    [SerializeField] float RotationSpeed = 1, MoveSpeed = 7, AltitudeSpeed = 5;
+    [SerializeField] float RotationSpeed = 1, BaseSpeed = 7, AimingSpeed = 5f, AltitudeSpeed = 5;
     float Angle = 0;
     float StartAngle = -90;
 
@@ -29,7 +29,8 @@ public class DroneMovement : MonoBehaviour
 
         //xy movement
         Vector3 inputs = new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), 0);
-        transform.position += inputs * Time.deltaTime * MoveSpeed;
+        bool isAiming = DroneGunSingleShot.Instance.IsAiming;
+        transform.position += inputs * Time.deltaTime * (isAiming ? AimingSpeed : BaseSpeed);
 
         //altitude (z movement)
         float altitudeInput = Input.GetAxisRaw("Altitude");

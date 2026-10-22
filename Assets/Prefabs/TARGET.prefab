@@ -192,7 +192,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: 9807f8ea651e56b46974595b997d603e, type: 3}
   m_Color: {r: 0.5566038, g: 0.5566038, b: 0.5566038, a: 1}
   m_FlipX: 0
@@ -270,7 +270,7 @@ MonoBehaviour:
   SightRange: 21.08
   ReactionTime: 0.2
   RotationSpeed: 150
-  AlertRadius: 15
+  AlertRadius: 30
   WedgeMaterial: {fileID: 2100000, guid: e829624448b2f594394e506e70cecf6a, type: 2}
   WedgeRend: {fileID: 2048976644}
   WedgeEnabled: 0
