@@ -269,7 +269,7 @@ MonoBehaviour:
   SightCone: 64.24
   SightRange: 21.08
   ReactionTime: 0.2
-  RotationSpeed: 150
+  RotationSpeed: 200
   AlertRadius: 30
   WedgeMaterial: {fileID: 2100000, guid: e829624448b2f594394e506e70cecf6a, type: 2}
   WedgeRend: {fileID: 2048976644}

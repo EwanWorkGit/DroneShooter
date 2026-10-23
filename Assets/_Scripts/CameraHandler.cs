@@ -4,10 +4,17 @@ using UnityEngine;
 
 public class CameraHandler : MonoBehaviour
 {
-    [SerializeField] Transform ToFollow, MouseTransform;
-    [SerializeField] float DistanceWeight = 0.2f, SmoothTime = 0.2f;
+    public static CameraHandler Instance;
 
-    Vector3 Velocity = Vector3.zero;
+    [SerializeField] Transform ToFollow, MouseTransform;
+    [SerializeField] float DistanceWeight = 0.2f, SmoothTime = 0.2f, RecoilSmoothTime = 0.1f;
+
+    Vector3 Velocity = Vector3.zero, RecoilVelocity = Vector3.zero, RecoilOffset = Vector3.zero;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void LateUpdate()
     {
@@ -18,6 +25,14 @@ public class CameraHandler : MonoBehaviour
         targetPos.z = -10;
 
         //smoothdamp estimates a spring moving towards the target and helps with smoothness and aiming ease
-        transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref Velocity, SmoothTime);
+        Vector3 followPosition = Vector3.SmoothDamp(transform.position, targetPos, ref Velocity, SmoothTime);
+        RecoilOffset = Vector3.SmoothDamp(RecoilOffset, Vector3.zero, ref RecoilVelocity, RecoilSmoothTime);
+
+        transform.position = followPosition + RecoilOffset;
+    }
+
+    public void InjectVelocity(Vector3 dir, float magnitude)
+    {
+        RecoilVelocity += dir * magnitude;
     }
 }

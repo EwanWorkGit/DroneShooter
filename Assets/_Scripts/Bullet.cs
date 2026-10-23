@@ -39,6 +39,10 @@ public class Bullet : MonoBehaviour
                 Debug.Log("Player does not have a health handler");
             }
         }
-        Destroy(gameObject);
+
+        if(LayerMask.LayerToName(collision.gameObject.layer) != "Bullets")
+        {
+            Destroy(gameObject);
+        }
     }
 }

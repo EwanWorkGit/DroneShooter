@@ -19,11 +19,11 @@ public class DroneGunSingleShot : MonoBehaviour
     public bool IsAiming = false;
     float TimeElapsed = 0;
     float CurrentDamage = 0;
-    //animation
+    
+    //visuals
     [SerializeField] Animator Animator;
-
-    //blood
     [SerializeField] GameObject BloodPrefab1;
+    [SerializeField] float ShakeMagnitude = 0.2f;
 
     private void Awake()
     {
@@ -65,12 +65,12 @@ public class DroneGunSingleShot : MonoBehaviour
         color.a = distFrac;
         rend.color = color;
 
-        //shooting
+        //Aiming
+        float timeFrac = TimeElapsed / MaxTimeElapsed;
         if (Input.GetMouseButton(0))
         {
             IsAiming = true;
             TimeElapsed += Time.deltaTime;
-            float timeFrac = TimeElapsed / MaxTimeElapsed;
             float inverseTimeFrac = Mathf.Max(1 - timeFrac, 0f);
             float crosshairScale = Mathf.Max(inverseTimeFrac * MaxCrosshairScale, MinCrosshairScale);
             if(TimeElapsed >= MinTimeElapsedToFire)
@@ -83,29 +83,33 @@ public class DroneGunSingleShot : MonoBehaviour
         }
         if(Input.GetMouseButtonUp(0))
         {
-            Crosshair.localScale = new Vector3(MaxCrosshairScale, MaxCrosshairScale, 1);
-            TimeElapsed = 0;
-
-            if (Animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+            //Shooting
+            if (TimeElapsed >= MinTimeElapsedToFire)
             {
-                Animator.SetTrigger("HasFired");
+                if (Animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+                {
+                    Animator.SetTrigger("HasFired");
+                }
+
+                float distToTarget = Vector2.Distance(crosshairPos, transform.position);
+                Vector2 dirToImpact = (crosshairPos - (Vector2)transform.position).normalized;
+                Shoot(crosshairPos, dirToImpact, distToTarget, targetAngle, CurrentDamage);
+                CameraHandler.Instance.InjectVelocity(-dirToImpact, ShakeMagnitude);
             }
 
-            Debug.Log(CurrentDamage);
-            float distToTarget = Vector2.Distance(mousePos, transform.position);
-            Shoot(crosshairPos, distToTarget, targetAngle, CurrentDamage);
+            Crosshair.localScale = new Vector3(MaxCrosshairScale, MaxCrosshairScale, 1);
+            TimeElapsed = 0;
             CurrentDamage = 0;
             IsAiming = false;
         }
     }
 
 
-    void Shoot(Vector2 impactPos, float distToMouse, float targetAngle, float damage)
+    void Shoot(Vector2 impactPos, Vector2 dirToImpact, float distToMouse, float targetAngle, float damage)
     {
         //shoot
         Collider2D[] collisions = Physics2D.OverlapCircleAll(impactPos, ImpactRadius);
         //draw ray from transform to impactPos
-        Vector2 dirToImpact = (impactPos - (Vector2)transform.position).normalized;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, dirToImpact, distToMouse, RayMask);
         //Debug.DrawLine(transform.position, radius * dirToImpact, Color.red, 20f);
         if (hit.collider == null || hit.transform.CompareTag("Enemy"))
