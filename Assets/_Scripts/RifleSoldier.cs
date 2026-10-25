@@ -23,8 +23,10 @@ public class RifleSoldier : MonoBehaviour
     float ShootingTimer = 0, ReactionTimer = 0;
     float CurrentCooldown;
     
+
+    public bool DetectedPlayer = false;
     bool NotFiring = true;
-    bool Detected = false;
+    
 
     private void OnDrawGizmos()
     {
@@ -75,7 +77,7 @@ public class RifleSoldier : MonoBehaviour
             ReactionTimer += Time.deltaTime;
             if(ReactionTimer > ReactionTime)
             {
-                Detected = true;
+                DetectedPlayer = true;
             }
         }
         else
@@ -83,7 +85,7 @@ public class RifleSoldier : MonoBehaviour
             ReactionTimer = 0;
         }
 
-        if(Detected && hitPlayer)
+        if(DetectedPlayer && hitPlayer)
         {
             float targetRotationAngle = AbsoluteAngleToPlayer();
             transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0, 0, targetRotationAngle), RotationSpeed * Time.deltaTime);
@@ -150,7 +152,7 @@ public class RifleSoldier : MonoBehaviour
         float dist = Vector2.Distance(alertedTransform.position, transform.position);
         if(dist <= AlertRadius)
         {
-            Detected = true;
+            DetectedPlayer = true;
         }
     }
 }

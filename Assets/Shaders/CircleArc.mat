@@ -34,11 +34,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Angle: 1.1641345
-    - _ArcOpacity: 0.3
+    - _Angle: 3.14
+    - _ArcOpacity: 0.5
     - _EndAngle: 2.57
-    - _Radius: -0.18
+    - _Radius: 1
     - _StartAngle: -2.98
     m_Colors:
-    - _Color: {r: 0.254717, g: 0, b: 0.011784392, a: 1}
+    - _Color: {r: 1, g: 0, b: 0.046154022, a: 1}
   m_BuildTextureStacks: []

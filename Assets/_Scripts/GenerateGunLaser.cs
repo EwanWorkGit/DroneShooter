@@ -7,7 +7,7 @@ public class GenerateGunLaser : MonoBehaviour
     //get crosshair position and line renderer
     //if collider.transform == null: end position = crosshair position; else: end position = hit.point
 
-    [SerializeField] Transform Crosshair;
+    [SerializeField] Transform Crosshair, Gun;
     [SerializeField] LineRenderer LineRenderer;
     [SerializeField] LayerMask RayMask;
 
@@ -25,10 +25,8 @@ public class GenerateGunLaser : MonoBehaviour
 
     private void Update()
     {
-        Vector3 dir = Crosshair.position - transform.position;
-        float dist = dir.magnitude;
-        dir.Normalize();
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, dist, RayMask);
+        Vector3 dir = (Crosshair.position - transform.position).normalized;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, 200f, RayMask);
         Vector3 endPosition = Vector3.zero;
         if(hit.transform != null)
         {
@@ -36,7 +34,7 @@ public class GenerateGunLaser : MonoBehaviour
         }
         else
         {
-            endPosition = Crosshair.position;
+            endPosition = Gun.position + Gun.up * 200f;
         }
 
         if(LineRenderer != null)
