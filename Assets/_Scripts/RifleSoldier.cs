@@ -66,12 +66,12 @@ public class RifleSoldier : MonoBehaviour
 
         UpdateWedge();
 
-        bool hitPlayer = hit.collider != null && hit.collider.CompareTag("Player");
+        bool rayHitPlayer = hit.collider != null && hit.collider.CompareTag("Player");
         bool inSightCone = Mathf.Abs(relativeAngle) < SightCone / 2f;
         bool inRange = Vector2.Distance(ShootingOrigin.position, Player.position) < SightRange;
         
         //inside cone, can raycast, in range, inside shooting cone
-        if (inSightCone && inRange && hitPlayer)
+        if (inSightCone && inRange && rayHitPlayer)
         {
             //Debug.Log($"INSIDE LINE OF SIGHT OF {transform.name}");
             ReactionTimer += Time.deltaTime;
@@ -85,7 +85,7 @@ public class RifleSoldier : MonoBehaviour
             ReactionTimer = 0;
         }
 
-        if(DetectedPlayer && hitPlayer)
+        if(DetectedPlayer && rayHitPlayer)
         {
             float targetRotationAngle = AbsoluteAngleToPlayer();
             transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0, 0, targetRotationAngle), RotationSpeed * Time.deltaTime);
@@ -95,6 +95,10 @@ public class RifleSoldier : MonoBehaviour
             {
                 StartCoroutine(FireBurst());
             }
+        }
+        else
+        {
+            ShootingTimer += Time.deltaTime;
         }
         
     }

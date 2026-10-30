@@ -15,7 +15,7 @@ public class DroneGunSingleShot : MonoBehaviour
     //gun
     [SerializeField] GameObject ImpactPrefab;
     [SerializeField] LayerMask RayMask;
-    [SerializeField] float MaxDamage = 4f, MinDamage = 2, ImpactRadius = 0.1f, MaxTimeElapsed = 0.785f, MinTimeElapsedToFire = 0.2f, MaxCrosshairScale = 1.0f, MinCrosshairScale = 0.5f, CrosshairRadius = 0.3f, MaxAngle = Mathf.PI - 0.1f;
+    [SerializeField] float MaxDamage = 4f, MaxTimeElapsed = 0.785f, MinTimeElapsedToFire = 0.2f, MaxCrosshairScale = 1.0f, MinCrosshairScale = 0.5f, CrosshairRadius = 0.3f, MaxAngle = Mathf.PI - 0.1f;
     public bool IsAiming = false;
     float TimeElapsed = 0;
     float CurrentDamage = 0;

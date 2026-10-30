@@ -1,0 +1,5 @@
+Level Design Principles:
+
+1. Don't let any engagement be one-sided unless its for a specific purpose. Don't let the player shoot an enemy without it being able to shoot back.
+
+2. Don't start a level with the player inside or near an enemy's sightline.

@@ -45,7 +45,7 @@ public class OutOfRangeMarkers : MonoBehaviour
 
                         if(pos.x >= 1)
                         {
-                            markerPos.x = 1;
+                            markerPos.x = 0.985f;
                         }
                         else if(pos.x <= 0)
                         {
@@ -58,7 +58,7 @@ public class OutOfRangeMarkers : MonoBehaviour
 
                         if(pos.y >= 1)
                         {
-                            markerPos.y = 1;
+                            markerPos.y = 0.985f;
                         }
                         else if(pos.y <= 0)
                         {
